@@ -12,7 +12,7 @@ HEIGHT = SOURCE.get_height()
 FONT_FAMILY = "Source Sans Pro"
 FONT_SLANT = cairo.FONT_SLANT_NORMAL
 FONT_WEIGHT = cairo.FONT_WEIGHT_BOLD
-FONT_SIZE = 92
+FONT_SIZE = 96
 
 TEXT_X = 750
 TEXT_Y = 1515
@@ -27,7 +27,16 @@ def generate_image(text, fp):
         cr.paint()
 
         cr.select_font_face(FONT_FAMILY, FONT_SLANT, FONT_WEIGHT)
-        cr.set_font_size(FONT_SIZE)
+
+        size = FONT_SIZE
+        while True:
+            cr.set_font_size(size)
+            extents = cr.text_extents(text)
+
+            if TEXT_X + extents.width + STROKE_WIDTH < WIDTH:
+                break
+
+            size -= 2
 
         cr.move_to(TEXT_X, TEXT_Y)
         cr.text_path(text)
