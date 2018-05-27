@@ -49,6 +49,7 @@ def show_text(cr, x, y, width, text):
     PangoCairo.layout_line_path(cr, line)
 
     cr.set_source_rgb(0, 0, 0)
+    cr.set_line_join(cairo.LINE_JOIN_ROUND)
     cr.set_line_width(STROKE_WIDTH)
     cr.stroke_preserve()
 
