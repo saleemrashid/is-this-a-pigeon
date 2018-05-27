@@ -31,7 +31,7 @@ def create_auth_handler():
     return auth
 
 
-def extract_text_from_status(status, screen_name):
+def get_status_text(status, screen_name):
     text = status.text
 
     try:
@@ -58,25 +58,3 @@ def extract_text_from_status(status, screen_name):
         return None
 
     return text[start:end]
-
-
-def remove_from_start_insensitive(s, prefix):
-    if s.lower().startswith(prefix.lower()):
-        s = s[len(prefix):].lstrip()
-
-    return s
-
-
-def extract_text(status, screen_name):
-    text = extract_text_from_status(status, screen_name)
-
-    if text is None:
-        return
-
-    text = text.strip()
-    text = remove_from_start_insensitive(text, "is this")
-
-    if not text.endswith("?"):
-        text += "?"
-
-    return text

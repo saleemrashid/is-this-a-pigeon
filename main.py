@@ -3,13 +3,13 @@ import io
 import tweepy
 
 from generate import generate_image
-from util import create_auth_handler, extract_text, MentionStreamListener
+from util import create_auth_handler, get_status_text, MentionStreamListener
 
 
 class CustomStreamListener(MentionStreamListener):
 
     def on_status(self, status):
-        text = extract_text(status, self.screen_name)
+        text = get_status_text(status, self.screen_name)
 
         if text is None:
             return
