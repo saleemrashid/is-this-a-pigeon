@@ -64,19 +64,13 @@ def remove_from_start_insensitive(s, prefix):
     return s
 
 
-def append_normalized(s, suffix):
-    normalized = unicodedata.normalize("NFKD", s)
-
-    if not normalized.endswith(suffix):
-        s += suffix
-
-    return s
-
-
 def format_text(text):
     text = text.strip()
     text = remove_from_start_insensitive(text, "is this")
-    text = append_normalized(text, "?")
+
+    normalized = unicodedata.normalize("NFKD", text)
+    if "?" not in normalized:
+        text += "?"
 
     return text
 
