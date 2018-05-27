@@ -2,6 +2,12 @@
 import cairo
 import os
 
+import gi
+gi.require_version("Pango", "1.0")
+gi.require_version("PangoCairo", "1.0")
+
+from gi.repository import Pango, PangoCairo  # noqa: E402
+
 SOURCE_FILENAME = os.path.join(os.path.dirname(__file__), "source.png")
 
 SOURCE = cairo.ImageSurface.create_from_png(SOURCE_FILENAME)
@@ -10,10 +16,8 @@ FORMAT = cairo.FORMAT_RGB24
 WIDTH = SOURCE.get_width()
 HEIGHT = SOURCE.get_height()
 
-FONT_FAMILY = "Source Sans Pro"
-FONT_SLANT = cairo.FONT_SLANT_NORMAL
-FONT_WEIGHT = cairo.FONT_WEIGHT_BOLD
-FONT_SIZE = 96
+FONT_DESCRIPTION = "Source Sans Pro Bold"
+FONT_SIZE = 72
 
 TEXT_X = 750
 TEXT_Y = 1515
@@ -27,20 +31,26 @@ def generate_image(text, fp):
         cr.set_source_surface(SOURCE)
         cr.paint()
 
-        cr.select_font_face(FONT_FAMILY, FONT_SLANT, FONT_WEIGHT)
+        layout = PangoCairo.create_layout(cr)
+        layout.set_text(text, -1)
 
         size = FONT_SIZE
-        while True:
-            cr.set_font_size(size)
-            extents = cr.text_extents(text)
 
-            if TEXT_X + extents.width + STROKE_WIDTH < WIDTH:
+        while True:
+            desc = Pango.FontDescription(
+                "{} {}".format(FONT_DESCRIPTION, size)
+            )
+            layout.set_font_description(desc)
+
+            ink_rect, logical_rect = layout.get_pixel_extents()
+            if TEXT_X + ink_rect.x + ink_rect.width + STROKE_WIDTH < WIDTH:
                 break
 
-            size -= 2
+            size -= 1
 
         cr.move_to(TEXT_X, TEXT_Y)
-        cr.text_path(text)
+        line = layout.get_line(0)
+        PangoCairo.layout_line_path(cr, line)
 
         cr.set_source_rgb(0, 0, 0)
         cr.set_line_width(STROKE_WIDTH)
