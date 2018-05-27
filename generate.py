@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import cairo
 import os
 
@@ -49,3 +50,16 @@ def generate_image(text, fp):
         cr.fill()
 
         surface.write_to_png(fp)
+
+
+if __name__ == "__main__":
+    import sys
+    import tempfile
+
+    fd, filename = tempfile.mkstemp(".png")
+    text = " ".join(sys.argv[1:])
+
+    with os.fdopen(fd, "wb") as fp:
+        generate_image(text, fp)
+
+    os.execlp("xdg-open", "xdg-open", filename)
