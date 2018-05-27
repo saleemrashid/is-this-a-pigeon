@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import cairo
 import os
+import unicodedata
 
 import gi
 gi.require_version("Pango", "1.0")
@@ -62,12 +63,19 @@ def remove_from_start_insensitive(s, prefix):
     return s
 
 
+def append_normalized(s, suffix):
+    normalized = unicodedata.normalize("NFKD", s)
+
+    if not normalized.endswith(suffix):
+        s += suffix
+
+    return s
+
+
 def format_text(text):
     text = text.strip()
     text = remove_from_start_insensitive(text, "is this")
-
-    if not text.endswith("?"):
-        text += "?"
+    text = append_normalized(text, "?")
 
     return text
 
