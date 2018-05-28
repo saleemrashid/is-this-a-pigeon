@@ -6,15 +6,14 @@ set -eu
 
 cd .glitch
 
-readonly INSTALL_DIR="$(mktemp -d)"
+readonly INSTALL_DIR="$PWD/sysroot"
 
-install_package() {
-    local package="$1"
+apt_install() {
+    apt-get download "$@"
 
-    local filename="$(apt-get download --print-uris "$package" | awk '{ print $2 }')"
-
-    apt-get download "$package"
-    dpkg-deb -x "$filename" "$INSTALL_DIR"
+    for filename in *.deb; do
+        dpkg-deb -x "$filename" "$INSTALL_DIR"
+    done
 }
 
 # Install dependencies
@@ -22,8 +21,7 @@ pip3 install -U --user -r ../requirements.txt
 pip2 install -U --user supervisor
 
 export PYTHONPATH="$INSTALL_DIR/usr/lib/python3/dist-packages"
-install_package python3-gi
-install_package python3-gi-cairo
+apt_install python3-gi python3-gi-cairo
 
 # Import font
 mkdir -p ~/.local/share/fonts
