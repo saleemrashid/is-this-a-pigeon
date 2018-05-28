@@ -18,18 +18,21 @@ WIDTH = SOURCE.get_width()
 HEIGHT = SOURCE.get_height()
 
 FONT_DESCRIPTION = "Source Sans Pro Bold"
-FONT_SIZE = 72
+STROKE_WIDTH = 10
 
 SUBTITLE_X = 750
 SUBTITLE_Y = 1515
-STROKE_WIDTH = 10
+SUBTITLE_SIZE = 72
+
+SPEAKER_X = 250
+SPEAKER_Y = 1200
+SPEAKER_WIDTH = 300
+SPEAKER_SIZE = 96
 
 
-def show_text(cr, x, y, width, text):
+def show_text(cr, x, y, width, size, text):
     layout = PangoCairo.create_layout(cr)
     layout.set_text(text, -1)
-
-    size = FONT_SIZE
 
     while True:
         desc = Pango.FontDescription(
@@ -43,7 +46,7 @@ def show_text(cr, x, y, width, text):
 
         size -= 1
 
-    cr.move_to(SUBTITLE_X, SUBTITLE_Y)
+    cr.move_to(x, y)
 
     line = layout.get_line(0)
     PangoCairo.layout_line_path(cr, line)
@@ -58,6 +61,8 @@ def show_text(cr, x, y, width, text):
 
 
 def remove_from_start_insensitive(s, prefix):
+    s = s.lstrip()
+
     if s.lower().startswith(prefix.lower()):
         s = s[len(prefix):].lstrip()
 
@@ -66,17 +71,23 @@ def remove_from_start_insensitive(s, prefix):
 
 def format_text(text):
     text = text.strip()
-    text = remove_from_start_insensitive(text, "is this")
 
-    normalized = unicodedata.normalize("NFKD", text)
+    try:
+        speaker, text = text.split(": ", 1)
+    except ValueError:
+        speaker = ""
+
+    subtitle = remove_from_start_insensitive(text, "is this")
+
+    normalized = unicodedata.normalize("NFKD", subtitle)
     if "?" not in normalized:
-        text += "?"
+        subtitle += "?"
 
-    return text
+    return (speaker, subtitle)
 
 
 def generate_image(text, fp):
-    subtitle = format_text(text)
+    speaker, subtitle = format_text(text)
 
     with SOURCE.create_similar_image(FORMAT, WIDTH, HEIGHT) as surface:
         cr = cairo.Context(surface)
@@ -84,7 +95,8 @@ def generate_image(text, fp):
         cr.set_source_surface(SOURCE)
         cr.paint()
 
-        show_text(cr, SUBTITLE_X, SUBTITLE_Y, WIDTH - SUBTITLE_X, subtitle)
+        show_text(cr, SPEAKER_X, SPEAKER_Y, SPEAKER_WIDTH, SPEAKER_SIZE, speaker)
+        show_text(cr, SUBTITLE_X, SUBTITLE_Y, WIDTH - SUBTITLE_X, SUBTITLE_SIZE, subtitle)
 
         surface.write_to_png(fp)
 
