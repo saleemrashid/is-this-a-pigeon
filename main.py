@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import io
+import logging
 import tweepy
 
 from generate import generate_image
@@ -12,6 +13,7 @@ class CustomStreamListener(MentionStreamListener):
         text = get_status_text(status, self.screen_name)
 
         if text is None:
+            logging.info("Status %d is not relevant", status.id)
             return
 
         fp = io.BytesIO()
@@ -28,6 +30,8 @@ class CustomStreamListener(MentionStreamListener):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
     auth = create_auth_handler()
 
     api = tweepy.API(auth)

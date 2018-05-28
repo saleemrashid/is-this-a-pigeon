@@ -1,4 +1,5 @@
 import os
+import logging
 import tweepy
 
 
@@ -13,6 +14,8 @@ class MentionStreamListener(tweepy.StreamListener):
         self.screen_name = screen_name
 
     def filter(self):
+        logging.info("Tracking screen name: %s", self.screen_name)
+
         stream = tweepy.Stream(self.api.auth, self)
         stream.filter(track=["@" + self.screen_name])
 
@@ -44,6 +47,12 @@ def get_status_text(status, screen_name):
     except AttributeError:
         display_start = 0
         display_end = len(text)
+
+    logging.info("Status %d [%d-%d]: %s",
+                 status.id,
+                 display_start,
+                 display_end,
+                 text)
 
     end = display_start - 1
 
