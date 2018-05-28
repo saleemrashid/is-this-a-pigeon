@@ -32,7 +32,12 @@ def create_auth_handler():
 
 
 def get_status_text(status, screen_name):
-    text = status.text
+    try:
+        status = tweepy.Status.parse(status._api, status.extended_tweet)
+    except AttributeError:
+        text = status.text
+    else:
+        text = status.full_text
 
     try:
         display_start, display_end = status.display_text_range
