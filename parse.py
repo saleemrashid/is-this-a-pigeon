@@ -68,6 +68,9 @@ def get_status_text(status, screen_name):
             if removed and mention["screen_name"] == screen_name:
                 relevant = True
 
+        if not relevant:
+            continue
+
         for field in ("hashtags", "media", "urls", "symbols"):
             try:
                 entities = status.entities[field]
@@ -77,8 +80,7 @@ def get_status_text(status, screen_name):
             for entity in entities:
                 start, end, _ = strip_entity(text, start, end, entity)
 
-        if relevant:
-            return text[start:end]
+        return text[start:end]
 
     return None
 
