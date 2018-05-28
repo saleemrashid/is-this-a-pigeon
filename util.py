@@ -35,26 +35,33 @@ def get_status_text(status, screen_name):
     text = status.text
 
     try:
-        start, end = status.display_text_range
+        display_start, display_end = status.display_text_range
     except AttributeError:
-        start = 0
-        end = len(text)
+        display_start = 0
+        display_end = len(text)
 
-    for mention in status.entities["user_mentions"]:
-        if mention["screen_name"] != screen_name:
-            continue
+    end = display_start - 1
 
-        indices = mention["indices"]
+    while end < display_end:
+        start = end + 1
+        end = text.find("\n", start, display_end)
 
-        if indices[0] == start:
-            start = indices[1]
-        elif indices[1] == end:
-            end = indices[0]
-        else:
-            continue
+        if end == -1:
+            end = display_end
 
-        break
-    else:
-        return None
+        for mention in status.entities["user_mentions"]:
+            if mention["screen_name"] != screen_name:
+                continue
 
-    return text[start:end]
+            indices = mention["indices"]
+
+            if indices[0] == start:
+                start = indices[1]
+            elif indices[1] == end:
+                end = indices[0]
+            else:
+                continue
+
+            return text[start:end]
+
+    return None
