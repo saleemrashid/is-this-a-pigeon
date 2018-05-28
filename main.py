@@ -4,7 +4,8 @@ import logging
 import tweepy
 
 from generate import generate_image
-from util import create_auth_handler, get_status_text, MentionStreamListener
+from parse import get_status_text
+from util import create_auth_handler, MentionStreamListener
 
 
 class CustomStreamListener(MentionStreamListener):
