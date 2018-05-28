@@ -29,6 +29,23 @@ def strip_entity(text, start, end, entity):
     return start, end, removed
 
 
+def strip_entities(text, start, end, status, fields):
+    entities = []
+
+    for field in fields:
+        try:
+            entities += status.entities[field]
+        except KeyError:
+            continue
+
+    entities.sort(key=lambda entity: entity["indices"][0])
+
+    for entity in entities:
+        start, end, _ = strip_entity(text, start, end, entity)
+
+    return start, end
+
+
 def get_status_text(status, screen_name):
     try:
         status = tweepy.Status.parse(status._api, status.extended_tweet)
@@ -71,16 +88,16 @@ def get_status_text(status, screen_name):
         if not relevant:
             continue
 
-        for field in ("hashtags", "media", "urls", "symbols"):
-            try:
-                entities = status.entities[field]
-            except KeyError:
-                continue
+        start, end = strip_entities(
+            text,
+            start,
+            end,
 
-            for entity in entities:
-                start, end, _ = strip_entity(text, start, end, entity)
+            status,
+            ("hashtags", "media", "urls", "symbols")
+        )
 
-        return text[start:end]
+        return text[start:end].strip()
 
     return None
 

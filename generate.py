@@ -83,8 +83,6 @@ def remove_from_start_insensitive(s, prefix):
 
 
 def format_text(text):
-    text = text.strip()
-
     try:
         speaker, text = text.split(": ", 1)
     except ValueError:
