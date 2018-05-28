@@ -20,8 +20,8 @@ HEIGHT = SOURCE.get_height()
 FONT_DESCRIPTION = "Source Sans Pro Bold"
 FONT_SIZE = 72
 
-TEXT_X = 750
-TEXT_Y = 1515
+SUBTITLE_X = 750
+SUBTITLE_Y = 1515
 STROKE_WIDTH = 10
 
 
@@ -43,7 +43,7 @@ def show_text(cr, x, y, width, text):
 
         size -= 1
 
-    cr.move_to(TEXT_X, TEXT_Y)
+    cr.move_to(SUBTITLE_X, SUBTITLE_Y)
 
     line = layout.get_line(0)
     PangoCairo.layout_line_path(cr, line)
@@ -76,7 +76,7 @@ def format_text(text):
 
 
 def generate_image(text, fp):
-    text = format_text(text)
+    subtitle = format_text(text)
 
     with SOURCE.create_similar_image(FORMAT, WIDTH, HEIGHT) as surface:
         cr = cairo.Context(surface)
@@ -84,7 +84,7 @@ def generate_image(text, fp):
         cr.set_source_surface(SOURCE)
         cr.paint()
 
-        show_text(cr, TEXT_X, TEXT_Y, WIDTH - TEXT_X, text)
+        show_text(cr, SUBTITLE_X, SUBTITLE_Y, WIDTH - SUBTITLE_X, subtitle)
 
         surface.write_to_png(fp)
 
