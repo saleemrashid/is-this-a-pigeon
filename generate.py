@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import cairo
 import os
+import re
 import unicodedata
 
 import gi
@@ -24,10 +25,17 @@ SUBTITLE_X = 750
 SUBTITLE_Y = 1515
 SUBTITLE_SIZE = 72
 
-SPEAKER_X = 250
+SPEAKER_X = 60
 SPEAKER_Y = 1200
-SPEAKER_WIDTH = 300
-SPEAKER_SIZE = 96
+SPEAKER_WIDTH = 850
+SPEAKER_SIZE = 108
+
+BUTTERFLY_REGEX = re.compile(r'^is\s+(".*"|\S+)\s+(.*)$', re.IGNORECASE)
+
+BUTTERFLY_X = 1000
+BUTTERFLY_Y = 400
+BUTTERFLY_WIDTH = 550
+BUTTERFLY_SIZE = 56
 
 
 def show_text(cr, x, y, width, size, text):
@@ -77,17 +85,26 @@ def format_text(text):
     except ValueError:
         speaker = ""
 
-    subtitle = remove_from_start_insensitive(text, "is this")
+    try:
+        butterfly, subtitle = BUTTERFLY_REGEX.match(text).groups()
+    except AttributeError:
+        butterfly = ""
+        subtitle = text
+
+    if butterfly == "this":
+        butterfly = ""
+    else:
+        butterfly = butterfly.strip("\"")
 
     normalized = unicodedata.normalize("NFKD", subtitle)
     if "?" not in normalized:
         subtitle += "?"
 
-    return (speaker, subtitle)
+    return (speaker, subtitle, butterfly)
 
 
 def generate_image(text, fp):
-    speaker, subtitle = format_text(text)
+    speaker, subtitle, butterfly = format_text(text)
 
     with SOURCE.create_similar_image(FORMAT, WIDTH, HEIGHT) as surface:
         cr = cairo.Context(surface)
@@ -95,8 +112,26 @@ def generate_image(text, fp):
         cr.set_source_surface(SOURCE)
         cr.paint()
 
-        show_text(cr, SPEAKER_X, SPEAKER_Y, SPEAKER_WIDTH, SPEAKER_SIZE, speaker)
-        show_text(cr, SUBTITLE_X, SUBTITLE_Y, WIDTH - SUBTITLE_X, SUBTITLE_SIZE, subtitle)
+        show_text(cr,
+                  SPEAKER_X,
+                  SPEAKER_Y,
+                  SPEAKER_WIDTH,
+                  SPEAKER_SIZE,
+                  speaker)
+
+        show_text(cr,
+                  SUBTITLE_X,
+                  SUBTITLE_Y,
+                  WIDTH - SUBTITLE_X,
+                  SUBTITLE_SIZE,
+                  subtitle)
+
+        show_text(cr,
+                  BUTTERFLY_X,
+                  BUTTERFLY_Y,
+                  BUTTERFLY_WIDTH,
+                  BUTTERFLY_SIZE,
+                  butterfly)
 
         surface.write_to_png(fp)
 
