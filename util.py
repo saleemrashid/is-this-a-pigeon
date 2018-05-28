@@ -34,6 +34,16 @@ def create_auth_handler():
     return auth
 
 
+def strip_whitespace(text, start, end):
+    substring = text[start:end]
+    length = len(substring)
+
+    start += length - len(substring.lstrip())
+    end -= length - len(substring.rstrip())
+
+    return start, end
+
+
 def get_status_text(status, screen_name):
     try:
         status = tweepy.Status.parse(status._api, status.extended_tweet)
@@ -62,6 +72,8 @@ def get_status_text(status, screen_name):
 
         if end == -1:
             end = display_end
+
+        start, end = strip_whitespace(text, start, end)
 
         for mention in status.entities["user_mentions"]:
             if mention["screen_name"] != screen_name:
