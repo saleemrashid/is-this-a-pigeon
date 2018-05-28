@@ -49,13 +49,14 @@ def show_text(cr, x, y, width, size, text, center=False):
         layout.set_font_description(desc)
 
         ink_rect, logical_rect = layout.get_pixel_extents()
-        if logical_rect.x + logical_rect.width + STROKE_WIDTH < width:
+        logical_width = logical_rect.x + logical_rect.width
+
+        if logical_width + STROKE_WIDTH < width:
             break
 
         size -= 1
 
     if center:
-        logical_width = logical_rect.x + logical_rect.width
         x += (width - logical_width) / 2
 
     cr.move_to(x, y)
