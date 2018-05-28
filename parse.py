@@ -49,14 +49,16 @@ def get_status_text(status, screen_name):
                  display_end,
                  text)
 
-    end = display_start - 1
+    line_end = display_start - 1
 
-    while end < display_end:
-        start = end + 1
-        end = text.find("\n", start, display_end)
+    while line_end < display_end:
+        start = line_end + 1
 
-        if end == -1:
-            end = display_end
+        line_end = text.find("\n", start, display_end)
+        if line_end == -1:
+            line_end = display_end
+
+        end = line_end
 
         relevant = False
 
