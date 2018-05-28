@@ -35,10 +35,10 @@ BUTTERFLY_REGEX = re.compile(r'^is\s+(".*"|\S+)\s+(.*)$', re.IGNORECASE)
 BUTTERFLY_X = 1000
 BUTTERFLY_Y = 400
 BUTTERFLY_WIDTH = 550
-BUTTERFLY_SIZE = 56
+BUTTERFLY_SIZE = 72
 
 
-def show_text(cr, x, y, width, size, text):
+def show_text(cr, x, y, width, size, text, center=False):
     layout = PangoCairo.create_layout(cr)
     layout.set_text(text, -1)
 
@@ -49,10 +49,14 @@ def show_text(cr, x, y, width, size, text):
         layout.set_font_description(desc)
 
         ink_rect, logical_rect = layout.get_pixel_extents()
-        if ink_rect.x + ink_rect.width + STROKE_WIDTH < width:
+        if logical_rect.x + logical_rect.width + STROKE_WIDTH < width:
             break
 
         size -= 1
+
+    if center:
+        logical_width = logical_rect.x + logical_rect.width
+        x += (width - logical_width) / 2
 
     cr.move_to(x, y)
 
@@ -117,7 +121,8 @@ def generate_image(text, fp):
                   SPEAKER_Y,
                   SPEAKER_WIDTH,
                   SPEAKER_SIZE,
-                  speaker)
+                  speaker,
+                  center=True)
 
         show_text(cr,
                   SUBTITLE_X,
@@ -131,7 +136,8 @@ def generate_image(text, fp):
                   BUTTERFLY_Y,
                   BUTTERFLY_WIDTH,
                   BUTTERFLY_SIZE,
-                  butterfly)
+                  butterfly,
+                  center=True)
 
         surface.write_to_png(fp)
 
