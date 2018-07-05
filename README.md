@@ -50,3 +50,14 @@ export TWITTER_ACCESS_TOKEN_SECRET="<insert-access-token-secret>"
 ```sh
 ./main.py
 ```
+
+### Non-bot usage
+
+You can also directly generate individual images locally:
+
+```sh
+./generate.py 'Twitter admins: is @this_pigeon bad?'
+```
+
+This will generate the image in a temporary directory and open it with your configured image viewer,
+from where you can save it wherever you want it.
