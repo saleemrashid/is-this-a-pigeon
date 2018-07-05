@@ -142,13 +142,21 @@ def generate_image(text, fp):
 
 
 if __name__ == "__main__":
+    import argparse
     import sys
     import tempfile
 
-    fd, filename = tempfile.mkstemp(".png")
-    text = " ".join(sys.argv[1:])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("text", metavar="TEXT", nargs=argparse.REMAINDER, help="the source text, as in a tweet mentioning the bot (but without the mention)")
+    parser.add_argument("-o", "--output", type=argparse.FileType("w+b"), help="the output file (default: a temporary file)")
+    parser.add_argument("-V", "--view", action="store_true", help="open the output file after writing it (on by default if -o is not specified)")
 
-    with os.fdopen(fd, "wb") as fp:
-        generate_image(text, fp)
+    args = parser.parse_args()
+    if args.output is None:
+        args.output = tempfile.NamedTemporaryFile(suffix=".png")
+        args.view = True
 
-    os.execlp("xdg-open", "xdg-open", filename)
+    generate_image(" ".join(args.text), args.output)
+
+    if args.view:
+        os.execlp("xdg-open", "xdg-open", args.output.name)

@@ -61,3 +61,4 @@ You can also directly generate individual images locally:
 
 This will generate the image in a temporary directory and open it with your configured image viewer,
 from where you can save it wherever you want it.
+See `./generate.py -h` for more options.
