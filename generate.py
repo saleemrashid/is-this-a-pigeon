@@ -30,7 +30,7 @@ SPEAKER_Y = 1200
 SPEAKER_WIDTH = 850
 SPEAKER_SIZE = 108
 
-BUTTERFLY_REGEX = re.compile(r'^is\s+(".*"|\S+)\s+(.*)$', re.IGNORECASE)
+BUTTERFLY_REGEX = re.compile(r'''^is\s+(['"„“”«»‚‘’‹›].*['"„“”«»‚‘’‹›]|\S+)\s+(.*)$''', re.IGNORECASE)
 
 BUTTERFLY_X = 1000
 BUTTERFLY_Y = 400
@@ -97,7 +97,7 @@ def format_text(text):
     if butterfly == "this":
         butterfly = ""
     else:
-        butterfly = butterfly.strip("\"")
+        butterfly = butterfly.strip('\'"„“”«»‚‘’‹›')
 
     normalized = unicodedata.normalize("NFKD", subtitle)
     if "?" not in normalized:
